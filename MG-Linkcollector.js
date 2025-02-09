@@ -199,12 +199,39 @@
         textBox.value = '';
     });
 
+    // 创建监测当前页面按钮
+    var monitorCurrentButton = document.createElement('button');
+    monitorCurrentButton.id = 'monitorCurrentLinksButton';
+    monitorCurrentButton.style.position = 'fixed';
+    monitorCurrentButton.style.bottom = '210px'; // 按钮悬浮在页面底部
+    monitorCurrentButton.style.right = '10px';
+    monitorCurrentButton.style.width = '100px';
+    monitorCurrentButton.style.height = '40px';
+    monitorCurrentButton.style.zIndex = '9999';
+    monitorCurrentButton.style.background = '#008CBA'; // 按钮背景颜色
+    monitorCurrentButton.style.color = 'white'; // 按钮文字颜色
+    monitorCurrentButton.style.border = 'none';
+    monitorCurrentButton.style.borderRadius = '5px';
+    monitorCurrentButton.style.cursor = 'pointer';
+    monitorCurrentButton.style.fontSize = '14px';
+    monitorCurrentButton.textContent = '监测当前页面';
+    monitorCurrentButton.addEventListener('click', function() {
+        var newMagnetLinks = extractMagnetLinks();
+        saveMagnetLinks(newMagnetLinks);
+        var textBox = document.getElementById('magnetLinksBox');
+        if (textBox.style.display !== 'none') {
+            var savedLinks = getSavedMagnetLinks();
+            textBox.value = savedLinks.map((link, index) => `${index + 1}. ${link}`).join('\n');
+        }
+    });
+
     // 将文本框和按钮添加到页面
     document.body.appendChild(textBox);
     document.body.appendChild(toggleButton); // 展开/关闭按钮
     document.body.appendChild(deleteCurrentButton); // 删除当前链接按钮
     document.body.appendChild(copyButton); // 一键复制按钮
     document.body.appendChild(clearAllButton); // 清除全部按钮
+    document.body.appendChild(monitorCurrentButton); // 监测当前页面按钮
 
     // 检查是否隐藏按钮
     var hideButtons = GM_getValue('hideButtons', false);
@@ -221,8 +248,9 @@
     var hideButtons = GM_getValue('hideButtons', false);
     var version = GM_info.script.version; // 获取插件版本号
     var author = GM_info.script.author; // 获取插件作者信息
+    var excludedSites = GM_getValue('excludedSites', ''); // 获取排除的网站列表
     var html = `
-      <div style="padding: 30px; background-color: white; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 2px 30px rgba(0, 0, 0, 0.1); width: 300px; height: 150px; font-size: 18px;">
+      <div style="padding: 30px; background-color: white; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 2px 30px rgba(0, 0, 0, 0.1); width: 400px; height: 250px; font-size: 18px;">
         <h2>设置</h2>
         <p>作者: ${author}</p>
         <p>版本: ${version}</p>
@@ -232,6 +260,11 @@
             <input type="checkbox" id="hideButtonsCheckbox" ${hideButtons ? 'checked' : ''}>
             <span class="slider round"></span>
           </label>
+        </label>
+        <br>
+        <label style="display: flex; align-items: center;">
+          <span style="margin-right: 10px;">排除的网站（每行一个URL）</span>
+          <textarea id="excludedSitesTextarea" style="width: 300px; height: 100px;">${excludedSites}</textarea>
         </label>
         <br>
         <button id="saveSettingsButton" style="margin-top: 20px; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">保存</button>
@@ -258,34 +291,71 @@
       deleteCurrentButton.style.display = hideButtons ? 'none' : 'block';
       copyButton.style.display = hideButtons ? 'none' : 'block';
       clearAllButton.style.display = hideButtons ? 'none' : 'block';
+
+      // 保存排除的网站列表
+      var excludedSitesTextarea = document.getElementById('excludedSitesTextarea');
+      GM_setValue('excludedSites', excludedSitesTextarea.value);
+
       document.body.removeChild(div);
     });
 });
 
-  // 主逻辑
-  var magnetLinks = extractMagnetLinks();
-  if (magnetLinks.length > 0) {
-    saveMagnetLinks(magnetLinks);
-  }
-  createTextBoxAndButtons();
-
-  // 添加键盘事件监听器
-  document.addEventListener('keydown', function(event) {
-    if (event.ctrlKey && event.key === 'q') {
-      var currentLinks = extractMagnetLinks();
-      deleteCurrentPageLinks(currentLinks);
-      var textBox = document.getElementById('magnetLinksBox');
-      if (textBox.style.display !== 'none') {
-        textBox.value = getSavedMagnetLinks().join('\n');
-      }
+// 检查当前页面是否在排除的网站列表中
+function isExcludedSite() {
+    var currentUrl = window.location.href;
+    var excludedSites = GM_getValue('excludedSites', '').split('\n').map(site => site.trim()).filter(site => site);
+    for (var site of excludedSites) {
+        if (currentUrl.startsWith(site)) {
+            return true;
+        }
     }
-  });
+    return false;
+}
 
-  // 确保每次页面加载时都提取并保存磁力链接
-  window.onload = function() {
+// 主逻辑
+if (!isExcludedSite()) {
     var magnetLinks = extractMagnetLinks();
     if (magnetLinks.length > 0) {
-      saveMagnetLinks(magnetLinks);
+        saveMagnetLinks(magnetLinks);
     }
-  };
+    createTextBoxAndButtons();
+
+    // 添加键盘事件监听器
+    document.addEventListener('keydown', function(event) {
+        if (event.ctrlKey && event.key === 'q') {
+            var currentLinks = extractMagnetLinks();
+            deleteCurrentPageLinks(currentLinks);
+            var textBox = document.getElementById('magnetLinksBox');
+            if (textBox.style.display !== 'none') {
+                textBox.value = getSavedMagnetLinks().join('\n');
+            }
+        }
+    });
+
+    // 使用 MutationObserver 监听 DOM 变化
+    var observer = new MutationObserver(function(mutationsList, observer) {
+        for (var mutation of mutationsList) {
+            if (mutation.type === 'childList' || mutation.type === 'attributes') {
+                var newMagnetLinks = extractMagnetLinks();
+                saveMagnetLinks(newMagnetLinks);
+            }
+        }
+    });
+
+    var config = { childList: true, subtree: true, attributes: true, characterData: true };
+    observer.observe(document.body, config);
+
+    // 确保每次页面加载时都提取并保存磁力链接
+    setTimeout(function() {
+        var newMagnetLinks = extractMagnetLinks();
+        saveMagnetLinks(newMagnetLinks);
+        var textBox = document.getElementById('magnetLinksBox');
+        if (textBox.style.display !== 'none') {
+            var savedLinks = getSavedMagnetLinks();
+            textBox.value = savedLinks.map((link, index) => `${index + 1}. ${link}`).join('\n');
+        }
+    }, 3000); // 3秒后执行
+
+}
+
 })();
