@@ -2,7 +2,7 @@
 // @name         MG-Linkcollector
 // @namespace    http://tampermonkey.net/
 // @version      1.0
-// @description  提取页面中的磁力链接并收集到文本框中，支持跨网页收集，文本框内容实时更新，使用快捷键CTRL+Q能快速删除当切页的磁力链接
+// @description  提取页面中的磁力链接并收集到文本框中，支持跨网页收集，文本框内容实时更新，使用快捷键CTRL+Q能快速删除当前页的磁力链接
 // @author       黄萌萌可爱多
 // @match        *://*/*
 // @license      MIT
