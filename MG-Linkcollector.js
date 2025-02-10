@@ -257,30 +257,6 @@
     });
   }
 
-  // 使用 MutationObserver 监听 DOM 变化
-  var observer = new MutationObserver(function(mutationsList, observer) {
-    for (var mutation of mutationsList) {
-      if (mutation.type === 'childList' || mutation.type === 'attributes') {
-        var newMagnetLinks = extractMagnetLinks();
-        saveMagnetLinks(newMagnetLinks);
-      }
-    }
-  });
-
-  var config = { childList: true, subtree: true, attributes: true, characterData: true };
-  observer.observe(document.body, config);
-
-  // 确保每次页面加载时都提取并保存磁力链接
-  setTimeout(function() {
-    var newMagnetLinks = extractMagnetLinks();
-    saveMagnetLinks(newMagnetLinks);
-    var textBox = document.getElementById('magnetLinksBox');
-    if (textBox.style.display !== 'none') {
-      var savedLinks = getSavedMagnetLinks();
-      textBox.value = savedLinks.map((link, index) => `${index + 1}. ${link}`).join('\n');
-    }
-  }, 2000); // 2秒后执行
-
   // 检查当前页面是否在允许的网站列表中
   function isAllowedSite() {
     var currentUrl = window.location.href;
@@ -359,18 +335,21 @@
       // 更新按钮显示状态
       var toggleButton = document.getElementById('toggleLinksBoxButton');
       var deleteCurrentButton = document.getElementById('deleteCurrentLinksButton');
-      var copyButton = document.getElementById('copyLinksButton');
-      var clearAllButton = document.getElementById('clearAllLinksButton');
+      var copyButton = document
+            var clearAllButton = document.getElementById('clearAllLinksButton');
+      var monitorCurrentButton = document.getElementById('monitorCurrentLinksButton');
       if (hideButtonsCheckbox.checked) {
         toggleButton.style.display = 'none';
         deleteCurrentButton.style.display = 'none';
         copyButton.style.display = 'none';
         clearAllButton.style.display = 'none';
+        monitorCurrentButton.style.display = 'none';
       } else {
         toggleButton.style.display = 'block';
         deleteCurrentButton.style.display = 'block';
         copyButton.style.display = 'block';
         clearAllButton.style.display = 'block';
+        monitorCurrentButton.style.display = 'block';
       }
 
       // 关闭设置菜单
@@ -384,10 +363,6 @@
 
   // 主逻辑
   if (isAllowedSite()) {
-    var magnetLinks = extractMagnetLinks();
-    if (magnetLinks.length > 0) {
-      saveMagnetLinks(magnetLinks);
-    }
     createTextBoxAndButtons();
     bindHotkeys();
   }
