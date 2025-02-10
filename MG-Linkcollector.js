@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MG-Linkcollector
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.1
 // @description  提取页面中的磁力链接并收集到文本框中，支持跨网页收集，文本框内容实时更新。快捷键：监测当前页面（Alt+Q），删除当前链接（Alt+W），清除全部（Alt+A），一键复制（Alt+S），展开/关闭（无快捷键）。
 // @author       黄萌萌可爱多
 // @match        *://*/*
