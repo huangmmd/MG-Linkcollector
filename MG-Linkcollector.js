@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         MG-Linkcollector
 // @namespace    http://tampermonkey.net/
-// @version      1.3
-// @description  提取页面中的磁力\Ed2k链接并收集到文本框中，支持跨网页收集，文本框内容实时更新。快捷键：监测当前页面（Alt+Q），删除当前链接（Alt+W），清除全部（Alt+A），一键复制（Alt+S），展开/关闭（无快捷键）。
+// @version      1.4
+// @description  提取页面中的磁力\Ed2k链接并收集到文本框中，支持跨网页收集，文本框内容实时更新。快捷键：监测当前页面（Alt+Q），删除当前链接（Alt+W），清除全部（Alt+A），一键复制（Alt+S），展开/关闭（无快捷键）。新增功能：自动获取新标签页的链接，聚焦页面超过2秒后再次自动获取。
 // @author       黄萌萌可爱多
 // @match        *://*/*
 // @license      MIT
@@ -15,7 +15,7 @@
 (function() {
   'use strict';
 
-  // 提取磁力链接和Edk2链接
+  // 提取磁力链接和Ed2k链接
   function extractMagnetLinks() {
     var magnetLinks = [];
     var linkElements = document.getElementsByTagName('a');
@@ -275,95 +275,41 @@
     return false;
   }
 
-  // 设置菜单命令
-  GM_registerMenuCommand('设置', function() {
-    var hideButtons = GM_getValue('hideButtons', false);
-    var version = GM_info.script.version; // 获取插件版本号
-    var author = GM_info.script.author; // 获取插件作者信息
-    var allowedSites = GM_getValue('allowedSites', ''); // 获取允许的网站列表
-    var allowAllSites = GM_getValue('allowAllSites', true); // 默认允许所有网站
+  // 自动获取链接的逻辑
+  function autoExtractLinks() {
+    var newMagnetLinks = extractMagnetLinks();
+    saveMagnetLinks(newMagnetLinks);
+    var textBox = document.getElementById('magnetLinksBox');
+    if (textBox.style.display !== 'none') {
+      var savedLinks = getSavedMagnetLinks();
+      textBox.value = savedLinks.map((link, index) => `${index + 1}. ${link}`).join('\n');
+    }
+  }
 
-    var html = `
-      <div style="padding: 30px; background-color: white; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 2px 30px rgba(0, 0, 0, 0.1); width: 400px; height: 300px; font-size: 18px;">
-        <h2>设置</h2>
-        <p>作者: ${author}</p>
-        <p>版本: ${version}</p>
-        <label style="display: flex; align-items: center;">
-          <span style="margin-right: 10px;">隐藏悬浮按钮</span>
-          <label class="switch">
-            <input type="checkbox" id="hideButtonsCheckbox" ${hideButtons ? 'checked' : ''}>
-            <span class="slider round"></span>
-          </label>
-        </label>
-        <br>
-        <label style="display: flex; align-items: center;">
-          <span style="margin-right: 10px;">允许适用脚本于任何网站</span>
-          <label class="switch">
-            <input type="checkbox" id="allowAllSitesCheckbox" ${allowAllSites ? 'checked' : ''}>
-            <span class="slider round"></span>
-          </label>
-        </label>
-        <br>
-        <label style="display: flex; align-items: center;">
-          <span style="margin-right: 10px;">仅允许用该脚本的网站（每行一个URL）</span>
-          <textarea id="allowedSitesTextarea" style="width: 300px; height: 100px;">${allowedSites}</textarea>
-        </label>
-        <br>
-        <button id="saveSettingsButton" style="margin-top: 20px; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">保存</button>
-        <button id="closeSettingsButton" style="margin-top: 10px; padding: 10px 20px; background-color: #F44336; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">关闭</button>
-      </div>
-    `;
-    var div = document.createElement('div');
-    div.innerHTML = html;
-    div.style.position = 'fixed';
-    div.style.top = '50%';
-    div.style.left = '50%';
-    div.style.transform = 'translate(-50%, -50%)';
-    div.style.zIndex = '10000';
-    document.body.appendChild(div);
+  // 监听窗口焦点变化
+  function listenFocusEvents() {
+    let lastFocusTime = Date.now();
+    let isFocused = false;
 
-    document.getElementById('saveSettingsButton').addEventListener('click', function() {
-      var hideButtonsCheckbox = document.getElementById('hideButtonsCheckbox');
-      GM_setValue('hideButtons', hideButtonsCheckbox.checked);
-
-      var allowAllSitesCheckbox = document.getElementById('allowAllSitesCheckbox');
-      GM_setValue('allowAllSites', allowAllSitesCheckbox.checked);
-
-      var allowedSitesTextarea = document.getElementById('allowedSitesTextarea');
-      GM_setValue('allowedSites', allowedSitesTextarea.value);
-
-      // 更新按钮显示状态
-      var toggleButton = document.getElementById('toggleLinksBoxButton');
-      var deleteCurrentButton = document.getElementById('deleteCurrentLinksButton');
-      var copyButton = document
-            var clearAllButton = document.getElementById('clearAllLinksButton');
-      var monitorCurrentButton = document.getElementById('monitorCurrentLinksButton');
-      if (hideButtonsCheckbox.checked) {
-        toggleButton.style.display = 'none';
-        deleteCurrentButton.style.display = 'none';
-        copyButton.style.display = 'none';
-        clearAllButton.style.display = 'none';
-        monitorCurrentButton.style.display = 'none';
-      } else {
-        toggleButton.style.display = 'block';
-        deleteCurrentButton.style.display = 'block';
-        copyButton.style.display = 'block';
-        clearAllButton.style.display = 'block';
-        monitorCurrentButton.style.display = 'block';
+    window.addEventListener('focus', function() {
+      isFocused = true;
+      let currentTime = Date.now();
+      if (currentTime - lastFocusTime > 2000) { // 超过2秒
+        autoExtractLinks();
       }
-
-      // 关闭设置菜单
-      document.body.removeChild(div);
+      lastFocusTime = currentTime;
     });
 
-    document.getElementById('closeSettingsButton').addEventListener('click', function() {
-      document.body.removeChild(div);
+    window.addEventListener('blur', function() {
+      isFocused = false;
     });
-  });
+  }
 
   // 主逻辑
   if (isAllowedSite()) {
     createTextBoxAndButtons();
     bindHotkeys();
+    listenFocusEvents();
+    autoExtractLinks(); // 初始加载时自动获取一次
   }
 })();
