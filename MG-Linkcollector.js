@@ -101,6 +101,7 @@
 
     var toggleButton = document.createElement('button');
     toggleButton.id = 'toggleLinksBoxButton';
+    toggleButton.title = '快捷键: 无'; // 添加快捷键信息
     toggleButton.style.position = 'fixed';
     toggleButton.style.bottom = '10px';
     toggleButton.style.right = '10px';
@@ -129,6 +130,7 @@
 
     var deleteCurrentButton = document.createElement('button');
     deleteCurrentButton.id = 'deleteCurrentLinksButton';
+    deleteCurrentButton.title = '快捷键: Alt+W'; // 添加快捷键信息
     deleteCurrentButton.style.position = 'fixed';
     deleteCurrentButton.style.bottom = '60px';
     deleteCurrentButton.style.right = '10px';
@@ -151,6 +153,7 @@
 
     var copyButton = document.createElement('button');
     copyButton.id = 'copyLinksButton';
+    copyButton.title = '快捷键: Alt+S'; // 添加快捷键信息
     copyButton.style.position = 'fixed';
     copyButton.style.bottom = '110px';
     copyButton.style.right = '10px';
@@ -178,6 +181,7 @@
 
     var clearAllButton = document.createElement('button');
     clearAllButton.id = 'clearAllLinksButton';
+    clearAllButton.title = '快捷键: Alt+A'; // 添加快捷键信息
     clearAllButton.style.position = 'fixed';
     clearAllButton.style.bottom = '160px';
     clearAllButton.style.right = '10px';
@@ -199,6 +203,7 @@
 
     var monitorCurrentButton = document.createElement('button');
     monitorCurrentButton.id = 'monitorCurrentLinksButton';
+    monitorCurrentButton.title = '快捷键: Alt+Q'; // 添加快捷键信息
     monitorCurrentButton.style.position = 'fixed';
     monitorCurrentButton.style.bottom = '210px';
     monitorCurrentButton.style.right = '10px';
