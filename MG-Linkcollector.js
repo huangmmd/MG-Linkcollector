@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         MG-Linkcollector
 // @namespace    http://tampermonkey.net/
-// @version      1.1
-// @description  提取页面中的磁力链接并收集到文本框中，支持跨网页收集，文本框内容实时更新。快捷键：监测当前页面（Alt+Q），删除当前链接（Alt+W），清除全部（Alt+A），一键复制（Alt+S），展开/关闭（无快捷键）。
+// @version      1.3
+// @description  提取页面中的磁力\Ed2k链接并收集到文本框中，支持跨网页收集，文本框内容实时更新。快捷键：监测当前页面（Alt+Q），删除当前链接（Alt+W），清除全部（Alt+A），一键复制（Alt+S），展开/关闭（无快捷键）。
 // @author       黄萌萌可爱多
 // @match        *://*/*
 // @license      MIT
@@ -15,24 +15,24 @@
 (function() {
   'use strict';
 
-  // 提取磁力链接
+  // 提取磁力链接和Edk2链接
   function extractMagnetLinks() {
     var magnetLinks = [];
     var linkElements = document.getElementsByTagName('a');
     for (var i = 0; i < linkElements.length; i++) {
-      var linkElement = linkElements[i];
-      var link = linkElement.href;
-      if (link.startsWith('magnet:')) {
-        magnetLinks.push(link);
-      }
+        var linkElement = linkElements[i];
+        var link = linkElement.href;
+        if (link.startsWith('magnet:') || link.startsWith('ed2k:')) {
+            magnetLinks.push(link);
+        }
     }
     var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
     while (walker.nextNode()) {
-      var node = walker.currentNode;
-      var text = node.textContent.trim();
-      if (text.startsWith('magnet:')) {
-        magnetLinks.push(text);
-      }
+        var node = walker.currentNode;
+        var text = node.textContent.trim();
+        if (text.startsWith('magnet:') || text.startsWith('ed2k:')) {
+            magnetLinks.push(text);
+        }
     }
     return magnetLinks;
   }
