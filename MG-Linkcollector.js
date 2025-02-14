@@ -272,6 +272,22 @@
     });
   }
 
+  // 检查当前页面是否在允许的网站列表中
+  function isAllowedSite() {
+    var allowAllSites = GM_getValue('allowAllSites', true);
+    if (allowAllSites) {
+        return true;
+    }
+    var allowedSites = GM_getValue('allowedSites', '').split('\n').map(site => site.trim()).filter(site => site !== '');
+    var currentUrl = window.location.href;
+    for (var site of allowedSites) {
+        if (currentUrl.startsWith(site)) {
+            return true;
+        }
+    }
+    return false;
+  }
+
   // 油猴面板设置
   function setupSettings() {
     GM_registerMenuCommand('设置', function() {
@@ -357,20 +373,24 @@
   }
 
   // 主逻辑
-  createTextBoxAndButtons();
-  bindHotkeys();
-  setupStorageListener();
-  listenFocusEvents();
-  setupSettings(); // 恢复设置菜单
-  autoExtractLinks(); // 初始加载时自动获取一次
+  if (isAllowedSite()) {
+    createTextBoxAndButtons();
+    bindHotkeys();
+    setupStorageListener();
+    listenFocusEvents();
+    setupSettings(); // 恢复设置菜单
+    autoExtractLinks(); // 初始加载时自动获取一次
 
-  // 根据设置显示或隐藏悬浮按钮和文本框
-  if (GM_getValue('hideButtons', false)) {
-    document.getElementById('magnetLinksBox').style.display = 'none';
-    document.getElementById('toggleLinksBoxButton').style.display = 'none';
-    document.getElementById('deleteCurrentLinksButton').style.display = 'none';
-    document.getElementById('copyLinksButton').style.display = 'none';
-    document.getElementById('clearAllLinksButton').style.display = 'none';
-    document.getElementById('monitorCurrentLinksButton').style.display = 'none';
+    // 根据设置显示或隐藏悬浮按钮和文本框
+    if (GM_getValue('hideButtons', false)) {
+        document.getElementById('magnetLinksBox').style.display = 'none';
+        document.getElementById('toggleLinksBoxButton').style.display = 'none';
+        document.getElementById('deleteCurrentLinksButton').style.display = 'none';
+        document.getElementById('copyLinksButton').style.display = 'none';
+        document.getElementById('clearAllLinksButton').style.display = 'none';
+        document.getElementById('monitorCurrentLinksButton').style.display = 'none';
+    }
+  } else {
+    console.log('当前网站不在允许的网站列表中，脚本不执行。');
   }
 })();
