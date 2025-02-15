@@ -1,3 +1,5 @@
+https://greasyfork.org/zh-CN/scripts/526394-mg-linkcollector   插件地址
+   
 为了确保能获取所有网页的磁力链接，该插件有以下保障措施：
 1.使用 DOMContentLoaded 事件代替 window.onload，以确保脚本在DOM完全加载后执行。
 2.使用 MutationObserver 来监听DOM的变化。一旦检测到新的磁力链接被添加到页面中，立即提取并保存。
