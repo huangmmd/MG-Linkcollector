@@ -205,12 +205,14 @@
     toggleButton.style.fontSize = '14px';
     toggleButton.textContent = '展开/关闭';
     toggleButton.addEventListener('click', function() {
-      var textBox = document.getElementById('magnetLinksBox');
-      if (textBox.style.display === 'none') {
-        textBox.style.display = 'block';
-      } else {
-        textBox.style.display = 'none';
-      }
+        var textBox = document.getElementById('magnetLinksBox');
+        if (textBox.style.display === 'none') {
+            textBox.style.display = 'block';
+            GM_setValue('textBoxVisible', true);
+        } else {
+            textBox.style.display = 'none';
+            GM_setValue('textBoxVisible', false);
+        }
     });
     document.body.appendChild(toggleButton);
   }
@@ -389,6 +391,11 @@
         document.getElementById('copyLinksButton').style.display = 'none';
         document.getElementById('clearAllLinksButton').style.display = 'none';
         document.getElementById('monitorCurrentLinksButton').style.display = 'none';
+    } else {
+        // 根据localStorage中的状态设置文本框的显示状态
+        var textBox = document.getElementById('magnetLinksBox');
+        var textBoxVisible = GM_getValue('textBoxVisible', true); // 默认展开
+        textBox.style.display = textBoxVisible ? 'block' : 'none';
     }
   } else {
     console.log('当前网站不在允许的网站列表中，脚本不执行。');
