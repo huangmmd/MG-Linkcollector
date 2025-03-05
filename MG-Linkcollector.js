@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MG-Linkcollector
 // @namespace    http://tampermonkey.net/
-// @version      2.1.1
+// @version      2.1.5
 // @description  提取页面中的磁力\Ed2k链接并收集到文本框中，支持跨网页收集，文本框内容实时更新。快捷键：监测当前页面（Alt+Q），删除当前链接（Alt+W），清除全部（Alt+A），一键复制（Alt+S），展开/关闭（无快捷键）。新增功能：自动获取新标签页的链接，聚焦页面超过2秒后再次自动获取。
 // @author       黄萌萌可爱多
 // @match        *://*/*
@@ -98,45 +98,22 @@
     textBox.readOnly = true; // 设置为只读
     document.body.appendChild(textBox);
 
-    var monitorCurrentButton = document.createElement('button');
-    monitorCurrentButton.id = 'monitorCurrentLinksButton';
-    monitorCurrentButton.title = '快捷键: Alt+Q';
-    monitorCurrentButton.style.position = 'fixed';
-    monitorCurrentButton.style.bottom = '210px';
-    monitorCurrentButton.style.right = '10px';
-    monitorCurrentButton.style.width = '100px';
-    monitorCurrentButton.style.height = '40px';
-    monitorCurrentButton.style.zIndex = '9999';
-    monitorCurrentButton.style.background = '#008CBA';
-    monitorCurrentButton.style.color = 'white';
-    monitorCurrentButton.style.border = 'none';
-    monitorCurrentButton.style.borderRadius = '5px';
-    monitorCurrentButton.style.cursor = 'pointer';
-    monitorCurrentButton.style.fontSize = '14px';
-    monitorCurrentButton.textContent = '监测当前页面';
-    monitorCurrentButton.addEventListener('click', function() {
-      var newMagnetLinks = extractMagnetLinks();
-      saveMagnetLinks(newMagnetLinks);
-      updateTextBox();
-    });
-    document.body.appendChild(monitorCurrentButton);
-
     var deleteCurrentButton = document.createElement('button');
     deleteCurrentButton.id = 'deleteCurrentLinksButton';
     deleteCurrentButton.title = '快捷键: Alt+W';
     deleteCurrentButton.style.position = 'fixed';
     deleteCurrentButton.style.bottom = '60px';
     deleteCurrentButton.style.right = '10px';
-    deleteCurrentButton.style.width = '100px';
-    deleteCurrentButton.style.height = '40px';
+    deleteCurrentButton.style.width = '70px'; // 修改: 100px -> 70px
+    deleteCurrentButton.style.height = '28px'; // 修改: 40px -> 28px
     deleteCurrentButton.style.zIndex = '9999';
     deleteCurrentButton.style.background = '#FF9800';
     deleteCurrentButton.style.color = 'white';
     deleteCurrentButton.style.border = 'none';
     deleteCurrentButton.style.borderRadius = '5px';
     deleteCurrentButton.style.cursor = 'pointer';
-    deleteCurrentButton.style.fontSize = '14px';
-    deleteCurrentButton.textContent = '删除当前链接';
+    deleteCurrentButton.style.fontSize = '10px'; // 修改: 14px -> 10px
+    deleteCurrentButton.textContent = '删当前链接';
     deleteCurrentButton.addEventListener('click', function() {
       var currentLinks = extractMagnetLinks();
       deleteCurrentPageLinks(currentLinks);
@@ -150,15 +127,15 @@
     clearAllButton.style.position = 'fixed';
     clearAllButton.style.bottom = '160px';
     clearAllButton.style.right = '10px';
-    clearAllButton.style.width = '100px';
-    clearAllButton.style.height = '40px';
+    clearAllButton.style.width = '70px'; // 修改: 100px -> 70px
+    clearAllButton.style.height = '28px'; // 修改: 40px -> 28px
     clearAllButton.style.zIndex = '9999';
     clearAllButton.style.background = '#F44336';
     clearAllButton.style.color = 'white';
     clearAllButton.style.border = 'none';
     clearAllButton.style.borderRadius = '5px';
     clearAllButton.style.cursor = 'pointer';
-    clearAllButton.style.fontSize = '14px';
+    clearAllButton.style.fontSize = '10px'; // 修改: 14px -> 10px
     clearAllButton.textContent = '清除全部';
     clearAllButton.addEventListener('click', function() {
       clearAllLinks();
@@ -172,15 +149,15 @@
     copyButton.style.position = 'fixed';
     copyButton.style.bottom = '110px';
     copyButton.style.right = '10px';
-    copyButton.style.width = '100px';
-    copyButton.style.height = '40px';
+    copyButton.style.width = '70px'; // 修改: 100px -> 70px
+    copyButton.style.height = '28px'; // 修改: 40px -> 28px
     copyButton.style.zIndex = '9999';
     copyButton.style.background = '#2196F3';
     copyButton.style.color = 'white';
     copyButton.style.border = 'none';
     copyButton.style.borderRadius = '5px';
     copyButton.style.cursor = 'pointer';
-    copyButton.style.fontSize = '14px';
+    copyButton.style.fontSize = '10px'; // 修改: 14px -> 10px
     copyButton.textContent = '一键复制';
     copyButton.addEventListener('click', function() {
       var savedLinks = getSavedMagnetLinks();
@@ -195,15 +172,15 @@
     toggleButton.style.position = 'fixed';
     toggleButton.style.bottom = '10px';
     toggleButton.style.right = '10px';
-    toggleButton.style.width = '100px';
-    toggleButton.style.height = '40px';
+    toggleButton.style.width = '70px'; // 修改: 100px -> 70px
+    toggleButton.style.height = '28px'; // 修改: 40px -> 28px
     toggleButton.style.zIndex = '9999';
     toggleButton.style.background = '#4CAF50';
     toggleButton.style.color = 'white';
     toggleButton.style.border = 'none';
     toggleButton.style.borderRadius = '5px';
     toggleButton.style.cursor = 'pointer';
-    toggleButton.style.fontSize = '14px';
+    toggleButton.style.fontSize = '10px'; // 修改: 14px -> 10px
     toggleButton.textContent = '展开/关闭';
     toggleButton.addEventListener('click', function() {
         var textBox = document.getElementById('magnetLinksBox');
@@ -223,9 +200,6 @@
     document.addEventListener('keydown', function(event) {
       if (event.altKey) {
         switch (event.key.toLowerCase()) {
-          case 'q':
-            document.getElementById('monitorCurrentLinksButton').click();
-            break;
           case 'w':
             document.getElementById('deleteCurrentLinksButton').click();
             break;
