@@ -74,6 +74,7 @@
   // 清除所有磁力链接
   function clearAllLinks() {
     localStorage.removeItem('magnetLinks');
+    alert("已清除全部链接"); // 添加提醒
   }
 
   // 更新文本框内容
@@ -97,21 +98,27 @@
     textBox.readOnly = true; // 设置为只读
     document.body.appendChild(textBox);
 
+    var buttonBaseStyle = {
+      position: 'fixed',
+      right: '10px',
+      width: '70px', // 缩小30%
+      height: '28px', // 缩小30%
+      zIndex: '9999',
+      border: 'none',
+      borderRadius: '5px',
+      cursor: 'pointer',
+      fontSize: '10px', // 缩小字体以适应按钮
+      marginBottom: '5px', // 按钮之间的间隔
+      whiteSpace: 'nowrap' // 防止换行
+    };
+
     var monitorCurrentButton = document.createElement('button');
     monitorCurrentButton.id = 'monitorCurrentLinksButton';
     monitorCurrentButton.title = '快捷键: Alt+Q';
-    monitorCurrentButton.style.position = 'fixed';
-    monitorCurrentButton.style.bottom = '210px';
-    monitorCurrentButton.style.right = '10px';
-    monitorCurrentButton.style.width = '100px';
-    monitorCurrentButton.style.height = '40px';
-    monitorCurrentButton.style.zIndex = '9999';
     monitorCurrentButton.style.background = '#008CBA';
     monitorCurrentButton.style.color = 'white';
-    monitorCurrentButton.style.border = 'none';
-    monitorCurrentButton.style.borderRadius = '5px';
-    monitorCurrentButton.style.cursor = 'pointer';
-    monitorCurrentButton.style.fontSize = '14px';
+    Object.assign(monitorCurrentButton.style, buttonBaseStyle);
+    monitorCurrentButton.style.bottom = '10px';
     monitorCurrentButton.textContent = '监测当前页面';
     monitorCurrentButton.addEventListener('click', function() {
       var newMagnetLinks = extractMagnetLinks();
@@ -123,18 +130,10 @@
     var deleteCurrentButton = document.createElement('button');
     deleteCurrentButton.id = 'deleteCurrentLinksButton';
     deleteCurrentButton.title = '快捷键: Alt+W';
-    deleteCurrentButton.style.position = 'fixed';
-    deleteCurrentButton.style.bottom = '60px';
-    deleteCurrentButton.style.right = '10px';
-    deleteCurrentButton.style.width = '100px';
-    deleteCurrentButton.style.height = '40px';
-    deleteCurrentButton.style.zIndex = '9999';
     deleteCurrentButton.style.background = '#FF9800';
     deleteCurrentButton.style.color = 'white';
-    deleteCurrentButton.style.border = 'none';
-    deleteCurrentButton.style.borderRadius = '5px';
-    deleteCurrentButton.style.cursor = 'pointer';
-    deleteCurrentButton.style.fontSize = '14px';
+    Object.assign(deleteCurrentButton.style, buttonBaseStyle);
+    deleteCurrentButton.style.bottom = '43px';
     deleteCurrentButton.textContent = '删除当前链接';
     deleteCurrentButton.addEventListener('click', function() {
       var currentLinks = extractMagnetLinks();
@@ -146,18 +145,10 @@
     var clearAllButton = document.createElement('button');
     clearAllButton.id = 'clearAllLinksButton';
     clearAllButton.title = '快捷键: Alt+A';
-    clearAllButton.style.position = 'fixed';
-    clearAllButton.style.bottom = '160px';
-    clearAllButton.style.right = '10px';
-    clearAllButton.style.width = '100px';
-    clearAllButton.style.height = '40px';
-    clearAllButton.style.zIndex = '9999';
     clearAllButton.style.background = '#F44336';
     clearAllButton.style.color = 'white';
-    clearAllButton.style.border = 'none';
-    clearAllButton.style.borderRadius = '5px';
-    clearAllButton.style.cursor = 'pointer';
-    clearAllButton.style.fontSize = '14px';
+    Object.assign(clearAllButton.style, buttonBaseStyle);
+    clearAllButton.style.bottom = '76px';
     clearAllButton.textContent = '清除全部';
     clearAllButton.addEventListener('click', function() {
       clearAllLinks();
@@ -168,18 +159,10 @@
     var copyButton = document.createElement('button');
     copyButton.id = 'copyLinksButton';
     copyButton.title = '快捷键: Alt+S';
-    copyButton.style.position = 'fixed';
-    copyButton.style.bottom = '110px';
-    copyButton.style.right = '10px';
-    copyButton.style.width = '100px';
-    copyButton.style.height = '40px';
-    copyButton.style.zIndex = '9999';
     copyButton.style.background = '#2196F3';
     copyButton.style.color = 'white';
-    copyButton.style.border = 'none';
-    copyButton.style.borderRadius = '5px';
-    copyButton.style.cursor = 'pointer';
-    copyButton.style.fontSize = '14px';
+    Object.assign(copyButton.style, buttonBaseStyle);
+    copyButton.style.bottom = '109px';
     copyButton.textContent = '一键复制';
     copyButton.addEventListener('click', function() {
       var savedLinks = getSavedMagnetLinks();
@@ -191,18 +174,10 @@
     var toggleButton = document.createElement('button');
     toggleButton.id = 'toggleLinksBoxButton';
     toggleButton.title = '展开/关闭';
-    toggleButton.style.position = 'fixed';
-    toggleButton.style.bottom = '10px';
-    toggleButton.style.right = '10px';
-    toggleButton.style.width = '100px';
-    toggleButton.style.height = '40px';
-    toggleButton.style.zIndex = '9999';
     toggleButton.style.background = '#4CAF50';
     toggleButton.style.color = 'white';
-    toggleButton.style.border = 'none';
-    toggleButton.style.borderRadius = '5px';
-    toggleButton.style.cursor = 'pointer';
-    toggleButton.style.fontSize = '14px';
+    Object.assign(toggleButton.style, buttonBaseStyle);
+    toggleButton.style.bottom = '142px';
     toggleButton.textContent = '展开/关闭';
     toggleButton.addEventListener('click', function() {
         var textBox = document.getElementById('magnetLinksBox');
@@ -297,107 +272,16 @@
       var version = GM_info.script.version;
       var author = GM_info.script.author;
       var allowedSites = GM_getValue('allowedSites', '');
-      var allowAllSites = GM_getValue('allowAllSites', true);
-
-      var html = `
-        <div style="padding: 30px; background-color: white; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 2px 30px rgba(0, 0, 0, 0.1); width: 400px; height: 300px; font-size: 18px;">
-          <h2>设置</h2>
-          <p>作者: ${author}</p>
-          <p>版本: ${version}</p>
-          <label style="display: flex; align-items: center;">
-            <span style="margin-right: 10px;">隐藏悬浮按钮</span>
-            <label class="switch">
-              <input type="checkbox" id="hideButtonsCheckbox" ${hideButtons ? 'checked' : ''}>
-              <span class="slider round"></span>
-            </label>
-          </label>
-          <br>
-          <label style="display: flex; align-items: center;">
-            <span style="margin-right: 10px;">允许适用脚本于任何网站</span>
-            <label class="switch">
-              <input type="checkbox" id="allowAllSitesCheckbox" ${allowAllSites ? 'checked' : ''}>
-              <span class="slider round"></span>
-            </label>
-          </label>
-          <br>
-          <label style="display: flex; align-items: center;">
-            <span style="margin-right: 10px;">仅允许用该脚本的网站（每行一个URL）</span>
-            <textarea id="allowedSitesTextarea" style="width: 300px; height: 100px;">${allowedSites}</textarea>
-          </label>
-          <br>
-          <button id="saveSettingsButton" style="margin-top: 20px; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">保存</button>
-          <button id="closeSettingsButton" style="margin-top: 10px; padding: 10px 20px; background-color: #F44336; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">关闭</button>
-        </div>
-      `;
-      var div = document.createElement('div');
-      div.innerHTML = html;
-      div.style.position = 'fixed';
-      div.style.top = '50%';
-      div.style.left = '50%';
-      div.style.transform = 'translate(-50%, -50%)';
-      div.style.zIndex = '10000';
-      document.body.appendChild(div);
-
-      document.getElementById('saveSettingsButton').addEventListener('click', function() {
-        var hideButtonsCheckbox = document.getElementById('hideButtonsCheckbox');
-        GM_setValue('hideButtons', hideButtonsCheckbox.checked);
-
-        var allowAllSitesCheckbox = document.getElementById('allowAllSitesCheckbox');
-        GM_setValue('allowAllSites', allowAllSitesCheckbox.checked);
-
-        var allowedSitesTextarea = document.getElementById('allowedSitesTextarea');
-        GM_setValue('allowedSites', allowedSitesTextarea.value);
-
-        document.body.removeChild(div);
-
-        // 根据设置显示或隐藏悬浮按钮和文本框
-        if (hideButtonsCheckbox.checked) {
-          document.getElementById('magnetLinksBox').style.display = 'none';
-          document.getElementById('toggleLinksBoxButton').style.display = 'none';
-          document.getElementById('deleteCurrentLinksButton').style.display = 'none';
-          document.getElementById('copyLinksButton').style.display = 'none';
-          document.getElementById('clearAllLinksButton').style.display = 'none';
-          document.getElementById('monitorCurrentLinksButton').style.display = 'none';
-        } else {
-          document.getElementById('magnetLinksBox').style.display = 'block';
-          document.getElementById('toggleLinksBoxButton').style.display = 'block';
-          document.getElementById('deleteCurrentLinksButton').style.display = 'block';
-          document.getElementById('copyLinksButton').style.display = 'block';
-          document.getElementById('clearAllLinksButton').style.display = 'block';
-          document.getElementById('monitorCurrentLinksButton').style.display = 'block';
-        }
-      });
-
-      document.getElementById('closeSettingsButton').addEventListener('click', function() {
-        document.body.removeChild(div);
-      });
     });
   }
 
-  // 主逻辑
+  createTextBoxAndButtons();
+  bindHotkeys();
+  setupStorageListener();
+  listenFocusEvents();
   if (isAllowedSite()) {
-    createTextBoxAndButtons();
-    bindHotkeys();
-    setupStorageListener();
-    listenFocusEvents();
-    setupSettings(); // 恢复设置菜单
-    autoExtractLinks(); // 初始加载时自动获取一次
-
-    // 根据设置显示或隐藏悬浮按钮和文本框
-    if (GM_getValue('hideButtons', false)) {
-        document.getElementById('magnetLinksBox').style.display = 'none';
-        document.getElementById('toggleLinksBoxButton').style.display = 'none';
-        document.getElementById('deleteCurrentLinksButton').style.display = 'none';
-        document.getElementById('copyLinksButton').style.display = 'none';
-        document.getElementById('clearAllLinksButton').style.display = 'none';
-        document.getElementById('monitorCurrentLinksButton').style.display = 'none';
-    } else {
-        // 根据localStorage中的状态设置文本框的显示状态
-        var textBox = document.getElementById('magnetLinksBox');
-        var textBoxVisible = GM_getValue('textBoxVisible', true); // 默认展开
-        textBox.style.display = textBoxVisible ? 'block' : 'none';
-    }
-  } else {
-    console.log('当前网站不在允许的网站列表中，脚本不执行。');
+    autoExtractLinks();
   }
+  setupSettings();
+
 })();
