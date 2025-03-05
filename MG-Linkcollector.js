@@ -74,6 +74,7 @@
   // 清除所有磁力链接
   function clearAllLinks() {
     localStorage.removeItem('magnetLinks');
+    alert('已清除全部链接'); // 添加提醒
   }
 
   // 更新文本框内容
